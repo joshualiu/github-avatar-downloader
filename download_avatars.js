@@ -4,6 +4,7 @@ console.log('Welcome to the GitHub Avatar Downloader!');
 
 var GITHUB_USER = "zhonghaoliu";
 var GITHUB_TOKEN = "443f2207a55d6386b72b778abcd6370d9c2f371a";
+//the token need to be hidden later!!!
 
 function getRepoContributors(repoOwner, repoName, cb) {
   var UA = "GitHub Avatar Downloader - Student Project";
@@ -19,7 +20,8 @@ function getRepoContributors(repoOwner, repoName, cb) {
     if (err) {
       console.error(err);
     } else {
-      console.log('body: ', body);
+      var data = JSON.parse(body.toString());
+      cb(err, data);
     }
 
   });
@@ -27,6 +29,12 @@ function getRepoContributors(repoOwner, repoName, cb) {
 };
 
 getRepoContributors("jquery", "jquery", function(err, result) {
-  console.log("Errors:", err);
-  console.log("Result:", result);
+  if (err) {
+    console.log('error: ', err);
+  } else {
+    // console.log(typeof result);
+    result.forEach(function(element) {
+      console.log(element.avatar_url);
+    });
+  }
 });
