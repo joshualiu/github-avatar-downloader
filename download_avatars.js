@@ -1,43 +1,44 @@
 var request = require('request');
 var fs = require('fs');
-
 console.log('Welcome to the GitHub Avatar Downloader!');
 
 var GITHUB_USER = "zhonghaoliu";
 var GITHUB_TOKEN = "443f2207a55d6386b72b778abcd6370d9c2f371a";
+var UA = "GitHub Avatar Downloader - Student Project";
+
 //the token need to be hidden later!!!
 
+var inputOwner = process.argv[2] || 0;
+var inputName = process.argv[3] || 0;
+
 function getRepoContributors(repoOwner, repoName, cb) {
-  var UA = "GitHub Avatar Downloader - Student Project";
+  if ((repoOwner && repoName) == 0 ) {
+    console.log('Invalid Input :/');
+    return ;
+  }
   var options = {
     url:'https://'+ GITHUB_USER + ':' + GITHUB_TOKEN + '@api.github.com/repos/' + repoOwner + '/' + repoName + '/contributors',
     headers: {
       'User-Agent': UA
     }
   };
-  // var requestURL = 'https://'+ GITHUB_USER + ':' + GITHUB_TOKEN + '@api.github.com/repos/' + repoOwner + '/' + repoName + '/contributors';
+
   request(options, function(err, res, body) {
-    console.log("StatusCode: ", res.statusCode);
     if (err) {
       console.error(err);
     } else {
-      var data = JSON.parse(body.toString());
+      var data = JSON.parse(body);
       cb(err, data);
     }
-
   });
-
 };
 
-
-getRepoContributors("jquery", "jquery", function(err, result) {
+getRepoContributors(inputOwner, inputName, function(err, result) {
   if (err) {
     console.log('error: ', err);
   } else {
-    // console.log(typeof result);
     result.forEach(function(element) {
       downloadImageByURL(element.avatar_url, element.login);
-
     });
   }
 });
@@ -48,6 +49,5 @@ function downloadImageByURL(url, filePath) {
            console.log ('Error: ', err);
          })
          .pipe(fs.createWriteStream(`./pics/${filePath}.jpg`));
-
 }
 
